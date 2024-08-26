@@ -1,0 +1,100 @@
+<style>
+  .sublist {
+    display: none;
+  }
+
+  .nav-list.show .sublist {
+    display: block;
+  }
+</style>
+
+{{ shop.customer_accounts_enabled }}
+
+<div class="relative bg-white">
+  <nav class="mx-5 p-3 text-lg">
+    <div class="flex justify-between">
+      <div class="navbar-brand cursor-pointer">
+        <a>{{ section.settings.modile_menu_title }}</a>
+      </div>
+      <div class="nav-data">
+        <ul class="flex gap-7 md:gap-14">
+          {% for link in linklists['main-menu'].links %}
+            {% if link.links != blank %}
+              <li class="nav-list cursor-pointer relative">
+                <a class="nav-link flex items-center" id="nav-link">
+                  {{ link.title }}
+                  {% render 'icon-dropdown' %}
+                </a>
+                <ul
+                  class="sublist shadow absolute left-0 top-10 z-10 bg-gray-300 rounded-lg p-2 w-screen w-screen max-w-sm"
+                  id="sub-list"
+                >
+                  {% for sublink in link.links %}
+                    <li class="p-2 hover:bg-gray-600 rounded-lg hover:text-white">
+                      <a href="{{ sublink.url }}">{{ sublink.title }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% else %}
+              <li class="nav-list cursor-pointer">
+                <a class="nav-link">{{ link.title }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="relative flex justify-end items-center gap-7 md:gap-14">
+        <a href="{{ routes.cart_url }}">
+          {% render 'icon-shopping-bag' %}
+        </a>
+
+        {% if shop.customer_accounts_enabled %}
+          <a href="{{ routes.account_login_url }}"> Login </a>
+          <a href="{{ routes.account_register_url }}"> Register </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</div>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "modile_menu_title",
+      "label": "Title",
+      "default": "Header",
+      "info": "This is for the mobile menu window"
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+  const navLink = document.querySelectorAll('.nav-link');
+  navLink.forEach((item) => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      let navItem = item.closest('.nav-list');
+      document.querySelectorAll('.nav-list').forEach((items) => {
+        if (items != navItem) {
+          items.classList.remove('show');
+        }
+      });
+      navItem.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.id != 'nav-link') {
+        document.querySelectorAll('.nav-list').forEach((item) => {
+          item.classList.remove('show');
+        });
+      }
+    });
+  });
+
+  // Close the submenu when clicking outside of the menu
+</script>
